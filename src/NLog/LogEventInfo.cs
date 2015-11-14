@@ -140,7 +140,7 @@ namespace NLog
             {
                 this.CalcFormattedMessage();
             }
-            MapFromDataToProperties(data);
+            MapFromDataToProperties(this.Properties, data);
         }
 
         /// <summary>
@@ -544,7 +544,7 @@ namespace NLog
             this.eventContextAdapter = new DictionaryAdapter<object, object>(this.properties);
         }
 
-        private void MapFromDataToProperties(object data = null)
+        private static void MapFromDataToProperties(IDictionary<object, object> properties, object data = null)
         {
             if (data == null)
             {
@@ -553,7 +553,7 @@ namespace NLog
             data.GetType()
                 .GetProperties()
                 .ToList()
-                .ForEach(propertyInfo => this.Properties.Add(propertyInfo.Name, propertyInfo.GetValue(data)));
+                .ForEach(propertyInfo => properties.Add(propertyInfo.Name, propertyInfo.GetValue(data)));
         }
     }
 }
