@@ -553,7 +553,7 @@ namespace NLog
             data.GetType()
                 .GetProperties()
                 .ToList()
-                .ForEach(x => this.Properties.Add(x.Name, x.GetValue(data)));
+                .ForEach(propertyInfo => this.Properties.Add(propertyInfo.Name, propertyInfo.GetValue(data)));
         }
     }
 }
