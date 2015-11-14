@@ -85,7 +85,7 @@ namespace NLog
         /// <param name="loggerName">Logger name.</param>
         /// <param name="message">Log message including parameter placeholders.</param>
         public LogEventInfo(LogLevel level, string loggerName, [Localizable(false)] string message)
-            : this(level, loggerName, null, message, null, null)
+            : this(level, loggerName, null, message, null, null, null)
         {
         }
 
@@ -98,7 +98,7 @@ namespace NLog
         /// <param name="message">Log message including parameter placeholders.</param>
         /// <param name="parameters">Parameter array.</param>
         public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters) 
-            : this(level, loggerName, formatProvider, message, parameters, null)
+            : this(level, loggerName, formatProvider, message, parameters, null, null)
         {
         }
 
@@ -128,7 +128,6 @@ namespace NLog
         /// <param name="data">Structured data to add to log event properties</param>
         public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception, object data): this()
         {
-            
             this.Level = level;
             this.LoggerName = loggerName;
             this.Message = message;
