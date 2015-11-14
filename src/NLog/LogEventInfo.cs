@@ -111,8 +111,22 @@ namespace NLog
         /// <param name="message">Log message including parameter placeholders.</param>
         /// <param name="parameters">Parameter array.</param>
         /// <param name="exception">Exception information.</param>
+        public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception)
+            : this(level, loggerName, formatProvider, message, parameters, exception, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogEventInfo" /> class.
+        /// </summary>
+        /// <param name="level">Log level.</param>
+        /// <param name="loggerName">Logger name.</param>
+        /// <param name="formatProvider">An IFormatProvider that supplies culture-specific formatting information.</param>
+        /// <param name="message">Log message including parameter placeholders.</param>
+        /// <param name="parameters">Parameter array.</param>
+        /// <param name="exception">Exception information.</param>
         /// <param name="data">Structured data to add to log event properties</param>
-        public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception, object data = null): this()
+        public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception, object data): this()
         {
             
             this.Level = level;
