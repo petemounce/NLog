@@ -85,7 +85,7 @@ namespace NLog
         /// <param name="loggerName">Logger name.</param>
         /// <param name="message">Log message including parameter placeholders.</param>
         public LogEventInfo(LogLevel level, string loggerName, [Localizable(false)] string message)
-            : this(level, loggerName, null, message, null, null, null)
+            : this(level, loggerName, null, message, null, null)
         {
         }
 
@@ -98,7 +98,7 @@ namespace NLog
         /// <param name="message">Log message including parameter placeholders.</param>
         /// <param name="parameters">Parameter array.</param>
         public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters) 
-            : this(level, loggerName, formatProvider, message, parameters, null, null)
+            : this(level, loggerName, formatProvider, message, parameters, null)
         {
         }
 
@@ -112,8 +112,19 @@ namespace NLog
         /// <param name="parameters">Parameter array.</param>
         /// <param name="exception">Exception information.</param>
         public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception)
-            : this(level, loggerName, formatProvider, message, parameters, exception, null)
+            : this()
         {
+            this.Level = level;
+            this.LoggerName = loggerName;
+            this.Message = message;
+            this.Parameters = parameters;
+            this.FormatProvider = formatProvider;
+            this.Exception = exception;
+
+            if (NeedToPreformatMessage(parameters))
+            {
+                this.CalcFormattedMessage();
+            }
         }
 
         /// <summary>
@@ -126,19 +137,9 @@ namespace NLog
         /// <param name="parameters">Parameter array.</param>
         /// <param name="exception">Exception information.</param>
         /// <param name="data">Structured data to add to log event properties</param>
-        public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception, object data): this()
+        public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception, object data)
+            : this(level, loggerName, formatProvider, message, parameters, exception)
         {
-            this.Level = level;
-            this.LoggerName = loggerName;
-            this.Message = message;
-            this.Parameters = parameters;
-            this.FormatProvider = formatProvider;
-            this.Exception = exception;
-         
-            if (NeedToPreformatMessage(parameters))
-            {
-                this.CalcFormattedMessage();
-            }
             MapFromDataToProperties(this.Properties, data);
         }
 
