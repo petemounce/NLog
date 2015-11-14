@@ -31,6 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System.Linq;
+
 namespace NLog
 {
     using System;
@@ -109,7 +111,8 @@ namespace NLog
         /// <param name="message">Log message including parameter placeholders.</param>
         /// <param name="parameters">Parameter array.</param>
         /// <param name="exception">Exception information.</param>
-        public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception): this()
+        /// <param name="data">Structured data to add to log event properties</param>
+        public LogEventInfo(LogLevel level, string loggerName, IFormatProvider formatProvider, [Localizable(false)] string message, object[] parameters, Exception exception, object data = null): this()
         {
             
             this.Level = level;
@@ -123,6 +126,7 @@ namespace NLog
             {
                 this.CalcFormattedMessage();
             }
+            MapFromDataToProperties(data);
         }
 
         /// <summary>
@@ -524,6 +528,18 @@ namespace NLog
         {
             this.properties = new Dictionary<object, object>();
             this.eventContextAdapter = new DictionaryAdapter<object, object>(this.properties);
+        }
+
+        private void MapFromDataToProperties(object data = null)
+        {
+            if (data == null)
+            {
+                return;
+            }
+            data.GetType()
+                .GetProperties()
+                .ToList()
+                .ForEach(x => this.Properties.Add(x.Name, x.GetValue(data)));
         }
     }
 }
