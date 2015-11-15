@@ -88,10 +88,7 @@ namespace NLog
         /// <param name="value">The value to be written.</param>
         public void <#=level#><T>(T value)
         {
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, null, value);
-            }
+            this.Log(LogLevel.<#=level#>, value);
         }
 
         /// <summary>
@@ -102,10 +99,7 @@ namespace NLog
         /// <param name="value">The value to be written.</param>
         public void <#=level#><T>(IFormatProvider formatProvider, T value)
         {
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, formatProvider, value);
-            }
+            this.Log(LogLevel.<#=level#>, formatProvider, value);
         }
 
         /// <summary>
@@ -114,15 +108,7 @@ namespace NLog
         /// <param name="messageFunc">A function returning message to be written. Function is not evaluated if logging is not enabled.</param>
         public void <#=level#>(LogMessageGenerator messageFunc)
         {
-            if (this.Is<#=level#>Enabled)
-            {
-                if (messageFunc == null)
-                {
-                    throw new ArgumentNullException("messageFunc");
-                }
-
-                this.WriteToTargets(LogLevel.<#=level#>, null, messageFunc());
-            }
+            this.Log(LogLevel.<#=level#>, messageFunc);
         }
 
         /// <summary>
@@ -133,7 +119,7 @@ namespace NLog
         [Obsolete("Use <#=level#>(Exception exception, string message, params object[] args) method instead.")]
         public void <#=level#>Exception([Localizable(false)] string message, Exception exception)
         {
-            this.<#=level#>(message, exception); 
+            this.Log(LogLevel.<#=level#>, message, exception); 
         }
 
         /// <summary>
@@ -145,10 +131,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#>(IFormatProvider formatProvider, [Localizable(false)] string message, params object[] args)
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, formatProvider, message, args); 
-            }
+            this.Log(LogLevel.<#=level#>, formatProvider, message, args);
         }
 
         /// <summary>
@@ -157,10 +140,7 @@ namespace NLog
         /// <param name="message">Log message.</param>
         public void <#=level#>([Localizable(false)] string message) 
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, null, message);
-            }
+            this.Log(LogLevel.<#=level#>, message);
         }
 
         /// <summary>
@@ -171,10 +151,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#>([Localizable(false)] string message, params object[] args) 
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, message, args);
-            }
+            this.Log(LogLevel.<#=level#>, message, args);
         }
 
         /// <summary>
@@ -185,10 +162,7 @@ namespace NLog
         [Obsolete("Use <#=level#>(Exception exception, string message, params object[] args) method instead.")]
         public void <#=level#>([Localizable(false)] string message, Exception exception)
         {
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, message, exception);
-            }
+            this.Log(LogLevel.<#=level#>, message, exception);
         }
 
         /// <summary>
@@ -199,10 +173,7 @@ namespace NLog
         /// <param name="args">Arguments to format.</param>
         public void <#=level#>(Exception exception, [Localizable(false)] string message, params object[] args)
         {
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, exception, message, args);
-            }
+            this.Log(LogLevel.<#=level#>, exception, message, args);
         }
 
         /// <summary>
@@ -215,10 +186,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#>(Exception exception, IFormatProvider formatProvider, [Localizable(false)] string message, params object[] args)
         {
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, exception, formatProvider, message, args);
-            }
+            this.Log(LogLevel.<#=level#>, exception, formatProvider, message, args);
         }
 
         /// <summary>
@@ -231,10 +199,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#><TArgument>(IFormatProvider formatProvider, [Localizable(false)] string message, TArgument argument)
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, formatProvider, message, new object[] { argument }); 
-            }
+            this.Log(LogLevel.<#=level#>, formatProvider, message, new object[] { argument });
         }
 
         /// <summary>
@@ -246,29 +211,24 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#><TArgument>([Localizable(false)] string message, TArgument argument)
         { 
-            if (this.Is<#=level#>Enabled)
-            {
 #pragma warning disable 618
-           
             //todo log also these calls as warning?
-                if (this.configuration.ExceptionLoggingOldStyle)
+            if (this.configuration.ExceptionLoggingOldStyle)
 #pragma warning restore 618
-                {   
-                    var exceptionCandidate = argument as Exception;		
-                    if (exceptionCandidate != null)		
-                    {
-
-                        // ReSharper disable CSharpWarnings::CS0618
-                        #pragma warning disable 618
-                        this.<#=level#>(message, exceptionCandidate);	
-                        #pragma warning restore 618
-                        // ReSharper restore CSharpWarnings::CS0618	
-                        return;		
-                    }
+            {   
+                var exceptionCandidate = argument as Exception;		
+                if (exceptionCandidate != null)		
+                {
+                    // ReSharper disable CSharpWarnings::CS0618
+                    #pragma warning disable 618
+                    this.<#=level#>(message, exceptionCandidate);	
+                    #pragma warning restore 618
+                    // ReSharper restore CSharpWarnings::CS0618	
+                    return;		
                 }
-
-                this.WriteToTargets(LogLevel.<#=level#>, message, new object[] { argument });
             }
+
+            this.Log(LogLevel.<#=level#>, message, new object[] { argument });
         }
 
         /// <summary>
@@ -283,10 +243,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#><TArgument1, TArgument2>(IFormatProvider formatProvider, [Localizable(false)] string message, TArgument1 argument1, TArgument2 argument2) 
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, formatProvider, message, new object[] { argument1, argument2 }); 
-            }
+            this.Log(LogLevel.<#=level#>, formatProvider, message, new object[] { argument1, argument2 }); 
         }
 
         /// <summary>
@@ -300,10 +257,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#><TArgument1, TArgument2>([Localizable(false)] string message, TArgument1 argument1, TArgument2 argument2)
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, message, new object[] { argument1, argument2 });
-            }
+            this.Log(LogLevel.<#=level#>, message, new object[] { argument1, argument2 });
         }
 
         /// <summary>
@@ -320,10 +274,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#><TArgument1, TArgument2, TArgument3>(IFormatProvider formatProvider, [Localizable(false)] string message, TArgument1 argument1, TArgument2 argument2, TArgument3 argument3) 
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, formatProvider, message, new object[] { argument1, argument2, argument3 }); 
-            }
+            this.Log(LogLevel.<#=level#>, formatProvider, message, new object[] { argument1, argument2, argument3 }); 
         }
 
         /// <summary>
@@ -339,10 +290,7 @@ namespace NLog
         [StringFormatMethod("message")]
         public void <#=level#><TArgument1, TArgument2, TArgument3>([Localizable(false)] string message, TArgument1 argument1, TArgument2 argument2, TArgument3 argument3)
         { 
-            if (this.Is<#=level#>Enabled)
-            {
-                this.WriteToTargets(LogLevel.<#=level#>, message, new object[] { argument1, argument2, argument3 });
-            }
+            this.Log(LogLevel.<#=level#>, message, new object[] { argument1, argument2, argument3 });
         }
 
         #endregion

@@ -391,7 +391,6 @@ namespace NLog
             LoggerImpl.Write(this.loggerType, this.GetTargetsForLevel(level), PrepareLogEventInfo(LogEventInfo.Create(level, this.Name, ex, formatProvider, message, args)), this.Factory);
         }
 
-
         private LogEventInfo PrepareLogEventInfo(LogEventInfo logEvent)
         {
             if (logEvent.FormatProvider == null)
