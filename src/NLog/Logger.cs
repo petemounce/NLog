@@ -531,15 +531,14 @@ namespace NLog
 
         internal void WriteToTargets(LogLevel level, IFormatProvider formatProvider, [Localizable(false)] string message, object[] args)
         {
-            LoggerImpl.Write(this.loggerType, this.GetTargetsForLevel(level), PrepareLogEventInfo(LogEventInfo.Create(level, this.Name, formatProvider, message, args)), this.Factory);
+            this.WriteToTargets(LogEventInfo.Create(level, this.Name, formatProvider, message, args));
         }
 
         internal void WriteToTargets(LogLevel level, IFormatProvider formatProvider, [Localizable(false)] string message)
         {
             // please note that this overload calls the overload of LogEventInfo.Create with object[] parameter on purpose -
             // to avoid unnecessary string.Format (in case of calling Create(LogLevel, string, IFormatProvider, object))
-            var logEvent = LogEventInfo.Create(level, this.Name, formatProvider, message, (object[])null);
-            LoggerImpl.Write(this.loggerType, this.GetTargetsForLevel(level), PrepareLogEventInfo(logEvent), this.Factory);
+            this.WriteToTargets(LogEventInfo.Create(level, this.Name, formatProvider, message, (object[])null));
         }
 
         internal void WriteToTargets<T>(LogLevel level, IFormatProvider formatProvider, T value)
@@ -552,19 +551,19 @@ namespace NLog
                 logEvent.Exception = ex;
              
             }
-            LoggerImpl.Write(this.loggerType, this.GetTargetsForLevel(level), logEvent, this.Factory);
+            this.WriteToTargets(logEvent);
         }
 
         [Obsolete("Use WriteToTargets(Exception ex, LogLevel level, IFormatProvider formatProvider, string message, object[] args) method instead.")]
         internal void WriteToTargets(LogLevel level, [Localizable(false)] string message, Exception ex)
         {
-            LoggerImpl.Write(this.loggerType, this.GetTargetsForLevel(level), PrepareLogEventInfo(LogEventInfo.Create(level, this.Name, message, ex)), this.Factory);
+            this.WriteToTargets(LogEventInfo.Create(level, this.Name, message, ex));
         }
 
 
         internal void WriteToTargets(LogLevel level, [Localizable(false)] string message, object[] args)
         {
-            this.WriteToTargets(level, this.Factory.DefaultCultureInfo, message, args);
+            this.WriteToTargets(LogEventInfo.Create(level, this.Name, this.Factory.DefaultCultureInfo, message, args));
         }
 
         internal void WriteToTargets(LogEventInfo logEvent)
